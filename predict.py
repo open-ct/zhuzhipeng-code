@@ -22,9 +22,10 @@ predict(): 预测音频情感
 '''
 
 if __name__ == '__main__':
-    audio_path = 'C:/Users/lenovo/PycharmProjects/zhuzhipeng-data/'
-    predict_path = './features/'
     config = opts.parse_opt()
+    audio_path = config.data_dir
+    data_name = config.data_dir.split('/')[-2]
+    predict_path = './features/'
     from keras import models
     import os
 
@@ -33,9 +34,9 @@ if __name__ == '__main__':
         os.mkdir(f'result/path_result')
         os.mkdir(f'result/label_result')
         os.mkdir(f'result/final_result')
-    if not os.path.exists(f'features/zhuzhipeng-data'):
-        os.mkdir(f'features/zhuzhipeng-data')
-    predict_new_path = 'features/zhuzhipeng-data/'
+    if not os.path.exists(f'features/{data_name}'):
+        os.mkdir(f'features/{data_name}')
+    predict_new_path = f'features/{data_name}/'
     model = models.load_model(os.path.join(config.checkpoint_path, config.checkpoint_name + '.h5'))
     for file in os.listdir(audio_path): # 重新创建
         print(file)
@@ -45,8 +46,8 @@ if __name__ == '__main__':
             os.mkdir(f'result/label_result/{file}')
         if not os.path.exists(f'result/final_result/{file}'):
             os.mkdir(f'result/final_result/{file}')
-        if not os.path.exists(f'features/zhuzhipeng-data/{file}'):
-            os.mkdir(f'features/zhuzhipeng-data/{file}')
+        if not os.path.exists(f'features/{data_name}/{file}'):
+            os.mkdir(f'features/{data_name}/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
             print('课程',files)
             result_path = f'result/path_result/{file}/predict_{files}_path.csv'
@@ -85,5 +86,22 @@ if __name__ == '__main__':
                     row["label"] = config.class_labels[int(result[i-1])]
                     # print(row["label"],row["path"],second)
                     writer.writerow([row["label"],row["path"], second[i-1],current_second])
-                    print(row["path"])
                     writer2.writerow([row["path"].split('/')[-2],strftime("%H:%M:%S", gmtime(current_second)),row["path"].split('/')[-1].split(".")[0].split("-")[-1],row["label"]])
+
+    import pandas as pd
+    import os
+    import glob
+
+    path = 'result/final_result'
+
+    for file in os.listdir('result/final_result'):
+        # for files in os.listdir(os.path.join(path,file)):
+        #     print(files)
+        all_csv = glob.glob(os.path.join(path, file) + r'\*.csv')
+        all_data_frames = []
+        for csv in all_csv:
+            data_frame = pd.read_csv(csv, encoding='gbk')
+            all_data_frames.append(data_frame)
+        data_frame_concat = pd.concat(all_data_frames, axis=0, ignore_index=True)
+        data_frame_concat.to_csv(f'result/{file}.csv', index=False, encoding='gbk')
+        print('合并完成!')
