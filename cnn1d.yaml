@@ -1,7 +1,7 @@
 model: cnn1d
 # 数据集
 data_path: dataset/0925class  # 数据集路径
-class_labels: ["angry-愤怒","Delate-删除的","disgust-厌恶蔑视","fear-恐惧担忧","happy-喜悦","sad-悲伤","surprised-惊讶","TS-师生互动"]  # 情感标签
+class_labels: ["angry-愤怒","Delate-删除的","disgust-厌恶蔑视","fear-恐惧担忧","happy-喜悦","neutral-中性","sad-悲伤","surprised-惊讶","TS-师生互动"]  # 情感标签
 casia_name: ["liuchanhg","wangzhe","zhaoquanyin","ZhaoZuoxiang"]
 dataset_name: 0925class
 # 特征存储
@@ -15,7 +15,7 @@ opensmile_path: opensmile-3.0-win-x64/opensmile-3.0-win-x64/  # Opensmile 安装
 
 # checkpoints
 checkpoint_path: checkpoints/  # checkpoint 存储路径
-checkpoint_name: 0925class  # checkpoint 文件名
+checkpoint_name: 1022class_weight  # checkpoint 文件名
 
 # 训练参数
 epochs: 100 # 训练 epoch 数
