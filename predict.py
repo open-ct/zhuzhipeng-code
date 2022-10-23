@@ -25,41 +25,48 @@ if __name__ == '__main__':
 
     data_name = 'data'
     config = opts.parse_opt()
-    audio_path = config.data_dir + data_name + '/'
-    predict_path = './features/'
+    audio_path = config.data_dir
     from keras import models
     import os
-
+    from shutil import copyfile
+    if not os.path.exists(config.data_dir + 'temp'):
+        os.mkdir(config.data_dir + 'temp')
+    if not os.path.exists(config.data_dir + 'temp/features/'):
+        os.mkdir(config.data_dir + 'temp/features/')
     if not os.path.exists(config.data_dir + 'result'):
         os.mkdir(config.data_dir + 'result')
-
-    if not os.path.exists(config.data_dir + 'result/path_result'):
-        os.mkdir(config.data_dir + 'result/path_result')
-        os.mkdir(config.data_dir + 'result/label_result')
-        os.mkdir(config.data_dir + 'result/final_result')
-    if not os.path.exists(f'features/{data_name}'):
-        os.mkdir(f'features/{data_name}')
-    predict_new_path = f'features/{data_name}/'
+    predict_path = config.data_dir + 'temp/features/'
+    if not os.path.exists(config.data_dir + 'temp/features/single_feature.csv'):
+        copyfile(os.getcwd() + '/features/single_feature.csv', config.data_dir + 'temp/features/single_feature.csv')
+    if not os.path.exists(config.data_dir + 'temp/path_result'):
+        os.mkdir(config.data_dir + 'temp/path_result')
+        os.mkdir(config.data_dir + 'temp/label_result')
+        os.mkdir(config.data_dir + 'temp/final_result')
+    if not os.path.exists(config.data_dir + f'temp/features'):
+        os.mkdir(config.data_dir + f'temp/features')
+    predict_new_path = config.data_dir + f'temp/features/'
     model = models.load_model(os.path.join(config.checkpoint_path, config.checkpoint_name + '.h5'))
     for file in os.listdir(audio_path): # 重新创建
-        print(file)
-        if not os.path.exists(config.data_dir + f'result/path_result/{file}'):
-            os.mkdir(config.data_dir + f'result/path_result/{file}')
-        if not os.path.exists(config.data_dir + f'result/label_result/{file}'):
-            os.mkdir(config.data_dir + f'result/label_result/{file}')
-        if not os.path.exists(config.data_dir + f'result/final_result/{file}'):
-            os.mkdir(config.data_dir + f'result/final_result/{file}')
-        if not os.path.exists(f'features/{data_name}/{file}'):
-            os.mkdir(f'features/{data_name}/{file}')
+        if file in ['result','temp']:
+            continue
+        if not os.path.exists(config.data_dir + f'temp/path_result/{file}'):
+            os.mkdir(config.data_dir + f'temp/path_result/{file}')
+        if not os.path.exists(config.data_dir + f'temp/label_result/{file}'):
+            os.mkdir(config.data_dir + f'temp/label_result/{file}')
+        if not os.path.exists(config.data_dir + f'temp/final_result/{file}'):
+            os.mkdir(config.data_dir + f'temp/final_result/{file}')
+        if not os.path.exists(config.data_dir + f'temp/features/{data_name}'):
+            os.mkdir(config.data_dir + f'temp/features/{data_name}')
+        if not os.path.exists(config.data_dir + f'temp/features/{data_name}/{file}'):
+            os.mkdir(config.data_dir + f'temp/features/{data_name}/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
-            print('课程',files)
-            result_path = config.data_dir + f'result/path_result/{file}/predict_{files}_path.csv'
-            result_path2 = config.data_dir + f'result/label_result/{file}/predict_{files}_result.csv'
-            result_path3 = config.data_dir + f'result/final_result/{file}/predict_{files}_result.csv'
-            if not os.path.exists(predict_new_path + f'{file}/{files}.csv'):
+            result_path = config.data_dir + f'temp/path_result/{file}/predict_{files}_path.csv'
+            result_path2 = config.data_dir + f'temp/label_result/{file}/predict_{files}_result.csv'
+            result_path3 = config.data_dir + f'temp/final_result/{file}/predict_{files}_result.csv'
+            if not os.path.exists(predict_new_path + f'{data_name}/{file}/{files}.csv'):
                 of.get_new_data(config, audio_path + file + '/' + files,
-                                predict_new_path + f'{file}/{files}.csv', result_path, train=False)
-            test_feature = of.load_feature(config, predict_new_path + f'{file}/{files}.csv', train=False)
+                                predict_new_path + f'{data_name}/{file}/{files}.csv', result_path, train=False)
+            test_feature = of.load_feature(config, predict_new_path + f'{data_name}/{file}/{files}.csv', train=False)
 
             test_feature = reshape_input(test_feature)
 
@@ -95,9 +102,9 @@ if __name__ == '__main__':
     import os
     import glob
 
-    path = config.data_dir + 'result/final_result'
+    path = config.data_dir + 'temp/final_result'
 
-    for file in os.listdir(config.data_dir + 'result/final_result'):
+    for file in os.listdir(config.data_dir + 'temp/final_result'):
         # for files in os.listdir(os.path.join(path,file)):
         #     print(files)
         all_csv = glob.glob(os.path.join(path, file) + r'\*.csv')
