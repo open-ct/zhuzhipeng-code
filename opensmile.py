@@ -24,13 +24,13 @@ get_feature_opensmile(): Opensmile 提取一个音频的特征
 
 def get_feature_opensmile(config, filepath: str):
     # 用于存储一个音频的特征的 csv文件，推荐使用绝对路径
-    single_feat_path = 'features/single_feature.csv'
+    # single_feat_path = config.single_feature_path
     # Opensmile 配置文件路径：我们使用 IS10_paraling
-    opensmile_config_path = os.path.join(config.opensmile_path, 'config/is09-13/IS10_paraling.conf')
-    cmd3 = 'SMILExtract -C ' + opensmile_config_path + ' -I ' + filepath + ' -O ' + single_feat_path
+    opensmile_config_path = os.getcwd() + '/' + config.opensmile_path + 'config/is09-13/IS10_paraling.conf'
+    cmd3 = 'SMILExtract -C ' + opensmile_config_path + ' -I ' + filepath + ' -O ' + config.data_dir + '/temp/features/single_feature.csv'
     cmd = subprocess.Popen(cmd3, cwd=config.opensmile_path + 'bin', stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE, shell=True).communicate()[0]
-    reader = csv.reader(open(single_feat_path, 'r'))
+    reader = csv.reader(open(config.data_dir + '/temp/features/single_feature.csv', 'r'))
     rows = [row for row in reader]
     last_line = rows[-1]
     return last_line[1: FEATURE_NUM[config.opensmile_config] + 1]
@@ -154,13 +154,12 @@ def get_new_data(config, data_path, feature_path: str,result_path2, train: bool)
     filelist = os.listdir(data_path)
     filelist.sort(key=lambda x: int(x.split('.')[0].split('-')[-1]))
     for filename in filelist:
-        print('切分数据',filename)
         if not filename.endswith('wav'):
             continue
-        filepath = os.path.join(data_path, filename)
-
+        filepath = data_path +'/'+ filename
         # 提取该音频的特征
         feature_vector = get_feature_opensmile(config, filepath)
+        print(feature_vector)
         writer2.writerow([filepath])
         feature_vector.insert(0, '-1')
         writer.writerow(feature_vector)

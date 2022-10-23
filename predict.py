@@ -22,40 +22,51 @@ predict(): 预测音频情感
 '''
 
 if __name__ == '__main__':
-    audio_path = 'dataset/0926'
-    predict_path = 'features/'
+
+    data_name = 'data'
     config = opts.parse_opt()
+    audio_path = config.data_dir
     from keras import models
     import os
-
-
-    if not os.path.exists(f'result/path_result'):
-        os.mkdir(f'result/path_result')
-        os.mkdir(f'result/label_result')
-        os.mkdir(f'result/final_result')
-    if not os.path.exists(f'features/0925class'):
-        os.mkdir(f'features/0925class')
-    predict_new_path = 'features/0925class/'
+    from shutil import copyfile
+    if not os.path.exists(config.data_dir + 'temp'):
+        os.mkdir(config.data_dir + 'temp')
+    if not os.path.exists(config.data_dir + 'temp/features/'):
+        os.mkdir(config.data_dir + 'temp/features/')
+    if not os.path.exists(config.data_dir + 'result'):
+        os.mkdir(config.data_dir + 'result')
+    predict_path = config.data_dir + 'temp/features/'
+    if not os.path.exists(config.data_dir + 'temp/features/single_feature.csv'):
+        copyfile(os.getcwd() + '/features/single_feature.csv', config.data_dir + 'temp/features/single_feature.csv')
+    if not os.path.exists(config.data_dir + 'temp/path_result'):
+        os.mkdir(config.data_dir + 'temp/path_result')
+        os.mkdir(config.data_dir + 'temp/label_result')
+        os.mkdir(config.data_dir + 'temp/final_result')
+    if not os.path.exists(config.data_dir + f'temp/features'):
+        os.mkdir(config.data_dir + f'temp/features')
+    predict_new_path = config.data_dir + f'temp/features/'
     model = models.load_model(os.path.join(config.checkpoint_path, config.checkpoint_name + '.h5'))
     for file in os.listdir(audio_path): # 重新创建
-        print(file)
-        if not os.path.exists(f'result/path_result/{file}'):
-            os.mkdir(f'result/path_result/{file}')
-        if not os.path.exists(f'result/label_result/{file}'):
-            os.mkdir(f'result/label_result/{file}')
-        if not os.path.exists(f'result/final_result/{file}'):
-            os.mkdir(f'result/final_result/{file}')
-        if not os.path.exists(f'features/0925class/{file}'):
-            os.mkdir(f'features/0925class/{file}')
+        if file in ['result','temp']:
+            continue
+        if not os.path.exists(config.data_dir + f'temp/path_result/{file}'):
+            os.mkdir(config.data_dir + f'temp/path_result/{file}')
+        if not os.path.exists(config.data_dir + f'temp/label_result/{file}'):
+            os.mkdir(config.data_dir + f'temp/label_result/{file}')
+        if not os.path.exists(config.data_dir + f'temp/final_result/{file}'):
+            os.mkdir(config.data_dir + f'temp/final_result/{file}')
+        if not os.path.exists(config.data_dir + f'temp/features/{data_name}'):
+            os.mkdir(config.data_dir + f'temp/features/{data_name}')
+        if not os.path.exists(config.data_dir + f'temp/features/{data_name}/{file}'):
+            os.mkdir(config.data_dir + f'temp/features/{data_name}/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
-            print('课程',files)
-            result_path = f'result/path_result/{file}/predict_{files}_path.csv'
-            result_path2 = f'result/label_result/{file}/predict_{files}_result.csv'
-            result_path3 = f'result/final_result/{file}/predict_{files}_result.csv'
-            # if not os.path.exists(predict_new_path + f'{file}/{files}.csv'):
-            #     of.get_new_data(config, os.path.join(os.path.join(audio_path, file), files),
-            #                     predict_new_path + f'{file}/{files}.csv', result_path, train=False)
-            test_feature = of.load_feature(config, predict_new_path + f'{file}/{files}.csv', train=False)
+            result_path = config.data_dir + f'temp/path_result/{file}/predict_{files}_path.csv'
+            result_path2 = config.data_dir + f'temp/label_result/{file}/predict_{files}_result.csv'
+            result_path3 = config.data_dir + f'temp/final_result/{file}/predict_{files}_result.csv'
+            if not os.path.exists(predict_new_path + f'{data_name}/{file}/{files}.csv'):
+                of.get_new_data(config, audio_path + file + '/' + files,
+                                predict_new_path + f'{data_name}/{file}/{files}.csv', result_path, train=False)
+            test_feature = of.load_feature(config, predict_new_path + f'{data_name}/{file}/{files}.csv', train=False)
 
             test_feature = reshape_input(test_feature)
 
@@ -85,4 +96,22 @@ if __name__ == '__main__':
                     row["label"] = config.class_labels[int(result[i-1])]
                     # print(row["label"],row["path"],second)
                     writer.writerow([row["label"],row["path"], second[i-1],current_second])
-                    writer2.writerow([row["path"].split('\\')[-2],strftime("%H:%M:%S", gmtime(current_second)),row["path"].split('\\')[-1].split(".")[0].split("-")[-1],row["label"]])
+                    writer2.writerow([row["path"].split('/')[-2],strftime("%H:%M:%S", gmtime(current_second)),row["path"].split('/')[-1].split(".")[0].split("-")[-1],row["label"]])
+
+    import pandas as pd
+    import os
+    import glob
+
+    path = config.data_dir + 'temp/final_result'
+
+    for file in os.listdir(config.data_dir + 'temp/final_result'):
+        # for files in os.listdir(os.path.join(path,file)):
+        #     print(files)
+        all_csv = glob.glob(os.path.join(path, file) + r'\*.csv')
+        all_data_frames = []
+        for csv in all_csv:
+            data_frame = pd.read_csv(csv, encoding='gbk')
+            all_data_frames.append(data_frame)
+        data_frame_concat = pd.concat(all_data_frames, axis=0, ignore_index=True)
+        data_frame_concat.to_csv(config.data_dir + f'result/{file}.csv', index=False, encoding='gbk')
+        print('合并完成!')
