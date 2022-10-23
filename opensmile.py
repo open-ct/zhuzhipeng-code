@@ -27,7 +27,6 @@ def get_feature_opensmile(config, filepath: str):
     # single_feat_path = config.single_feature_path
     # Opensmile 配置文件路径：我们使用 IS10_paraling
     opensmile_config_path = os.getcwd() + '/' + config.opensmile_path + 'config/is09-13/IS10_paraling.conf'
-    print(opensmile_config_path)
     cmd3 = 'SMILExtract -C ' + opensmile_config_path + ' -I ' + filepath + ' -O ' + config.data_dir + '/temp/features/single_feature.csv'
     cmd = subprocess.Popen(cmd3, cwd=config.opensmile_path + 'bin', stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE, shell=True).communicate()[0]
