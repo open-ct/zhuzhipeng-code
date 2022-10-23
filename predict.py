@@ -22,8 +22,8 @@ predict(): 预测音频情感
 '''
 
 if __name__ == '__main__':
-    audio_path = 'dataset/0926'
-    predict_path = 'features/'
+    audio_path = 'C:/Users/lenovo/PycharmProjects/zhuzhipeng-data/'
+    predict_path = './features/'
     config = opts.parse_opt()
     from keras import models
     import os
@@ -33,9 +33,9 @@ if __name__ == '__main__':
         os.mkdir(f'result/path_result')
         os.mkdir(f'result/label_result')
         os.mkdir(f'result/final_result')
-    if not os.path.exists(f'features/0925class'):
-        os.mkdir(f'features/0925class')
-    predict_new_path = 'features/0925class/'
+    if not os.path.exists(f'features/zhuzhipeng-data'):
+        os.mkdir(f'features/zhuzhipeng-data')
+    predict_new_path = 'features/zhuzhipeng-data/'
     model = models.load_model(os.path.join(config.checkpoint_path, config.checkpoint_name + '.h5'))
     for file in os.listdir(audio_path): # 重新创建
         print(file)
@@ -45,16 +45,16 @@ if __name__ == '__main__':
             os.mkdir(f'result/label_result/{file}')
         if not os.path.exists(f'result/final_result/{file}'):
             os.mkdir(f'result/final_result/{file}')
-        if not os.path.exists(f'features/0925class/{file}'):
-            os.mkdir(f'features/0925class/{file}')
+        if not os.path.exists(f'features/zhuzhipeng-data/{file}'):
+            os.mkdir(f'features/zhuzhipeng-data/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
             print('课程',files)
             result_path = f'result/path_result/{file}/predict_{files}_path.csv'
             result_path2 = f'result/label_result/{file}/predict_{files}_result.csv'
             result_path3 = f'result/final_result/{file}/predict_{files}_result.csv'
-            # if not os.path.exists(predict_new_path + f'{file}/{files}.csv'):
-            #     of.get_new_data(config, os.path.join(os.path.join(audio_path, file), files),
-            #                     predict_new_path + f'{file}/{files}.csv', result_path, train=False)
+            if not os.path.exists(predict_new_path + f'{file}/{files}.csv'):
+                of.get_new_data(config, audio_path + file + '/'+ files,
+                                predict_new_path + f'{file}/{files}.csv', result_path, train=False)
             test_feature = of.load_feature(config, predict_new_path + f'{file}/{files}.csv', train=False)
 
             test_feature = reshape_input(test_feature)
@@ -85,4 +85,5 @@ if __name__ == '__main__':
                     row["label"] = config.class_labels[int(result[i-1])]
                     # print(row["label"],row["path"],second)
                     writer.writerow([row["label"],row["path"], second[i-1],current_second])
-                    writer2.writerow([row["path"].split('\\')[-2],strftime("%H:%M:%S", gmtime(current_second)),row["path"].split('\\')[-1].split(".")[0].split("-")[-1],row["label"]])
+                    print(row["path"])
+                    writer2.writerow([row["path"].split('/')[-2],strftime("%H:%M:%S", gmtime(current_second)),row["path"].split('/')[-1].split(".")[0].split("-")[-1],row["label"]])

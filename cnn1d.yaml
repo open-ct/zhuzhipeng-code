@@ -11,8 +11,8 @@ train_feature_path: features/train_0925.csv  # 训练特征存储路径
 test_class_path: features/test_0925.csv
 # Opensmile 配置，只在 'feature_method: o' 时 需要设置
 opensmile_config: IS10_paraling  # Opensmile 标准特征集
-opensmile_path: opensmile-3.0-win-x64/opensmile-3.0-win-x64/  # Opensmile 安装路径
-
+opensmile_path: C:/Users/lenovo/PycharmProjects/zhuzhipeng-code/opensmile-3.0-win-x64/opensmile-3.0-win-x64/  # Opensmile 安装路径
+single_feature_path: C:/Users/lenovo/PycharmProjects/zhuzhipeng-code/features/single_feature.csv
 # checkpoints
 checkpoint_path: checkpoints/  # checkpoint 存储路径
 checkpoint_name: 1022class_weight  # checkpoint 文件名
