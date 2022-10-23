@@ -22,39 +22,42 @@ predict(): 预测音频情感
 '''
 
 if __name__ == '__main__':
+
+    data_name = 'data'
     config = opts.parse_opt()
-    audio_path = config.data_dir
-    data_name = config.data_dir.split('/')[-2]
+    audio_path = config.data_dir + data_name + '/'
     predict_path = './features/'
     from keras import models
     import os
 
+    if not os.path.exists(config.data_dir + 'result'):
+        os.mkdir(config.data_dir + 'result')
 
-    if not os.path.exists(f'result/path_result'):
-        os.mkdir(f'result/path_result')
-        os.mkdir(f'result/label_result')
-        os.mkdir(f'result/final_result')
+    if not os.path.exists(config.data_dir + 'result/path_result'):
+        os.mkdir(config.data_dir + 'result/path_result')
+        os.mkdir(config.data_dir + 'result/label_result')
+        os.mkdir(config.data_dir + 'result/final_result')
     if not os.path.exists(f'features/{data_name}'):
         os.mkdir(f'features/{data_name}')
     predict_new_path = f'features/{data_name}/'
     model = models.load_model(os.path.join(config.checkpoint_path, config.checkpoint_name + '.h5'))
     for file in os.listdir(audio_path): # 重新创建
         print(file)
-        if not os.path.exists(f'result/path_result/{file}'):
-            os.mkdir(f'result/path_result/{file}')
-        if not os.path.exists(f'result/label_result/{file}'):
-            os.mkdir(f'result/label_result/{file}')
-        if not os.path.exists(f'result/final_result/{file}'):
-            os.mkdir(f'result/final_result/{file}')
+        if not os.path.exists(config.data_dir + f'result/path_result/{file}'):
+            os.mkdir(config.data_dir + f'result/path_result/{file}')
+        if not os.path.exists(config.data_dir + f'result/label_result/{file}'):
+            os.mkdir(config.data_dir + f'result/label_result/{file}')
+        if not os.path.exists(config.data_dir + f'result/final_result/{file}'):
+            os.mkdir(config.data_dir + f'result/final_result/{file}')
         if not os.path.exists(f'features/{data_name}/{file}'):
             os.mkdir(f'features/{data_name}/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
             print('课程',files)
-            result_path = f'result/path_result/{file}/predict_{files}_path.csv'
-            result_path2 = f'result/label_result/{file}/predict_{files}_result.csv'
-            result_path3 = f'result/final_result/{file}/predict_{files}_result.csv'
+            result_path = config.data_dir + f'result/path_result/{file}/predict_{files}_path.csv'
+            result_path2 = config.data_dir + f'result/label_result/{file}/predict_{files}_result.csv'
+            result_path3 = config.data_dir + f'result/final_result/{file}/predict_{files}_result.csv'
             if not os.path.exists(predict_new_path + f'{file}/{files}.csv'):
-                of.get_new_data(config, audio_path + file + '/'+ files,
+                of.get_new_data(config, audio_path + file + '/' + files,
                                 predict_new_path + f'{file}/{files}.csv', result_path, train=False)
             test_feature = of.load_feature(config, predict_new_path + f'{file}/{files}.csv', train=False)
 
@@ -92,9 +95,9 @@ if __name__ == '__main__':
     import os
     import glob
 
-    path = 'result/final_result'
+    path = config.data_dir + 'result/final_result'
 
-    for file in os.listdir('result/final_result'):
+    for file in os.listdir(config.data_dir + 'result/final_result'):
         # for files in os.listdir(os.path.join(path,file)):
         #     print(files)
         all_csv = glob.glob(os.path.join(path, file) + r'\*.csv')
@@ -103,5 +106,5 @@ if __name__ == '__main__':
             data_frame = pd.read_csv(csv, encoding='gbk')
             all_data_frames.append(data_frame)
         data_frame_concat = pd.concat(all_data_frames, axis=0, ignore_index=True)
-        data_frame_concat.to_csv(f'result/{file}.csv', index=False, encoding='gbk')
+        data_frame_concat.to_csv(config.data_dir + f'result/{file}.csv', index=False, encoding='gbk')
         print('合并完成!')

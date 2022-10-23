@@ -26,11 +26,12 @@ def get_feature_opensmile(config, filepath: str):
     # 用于存储一个音频的特征的 csv文件，推荐使用绝对路径
     # single_feat_path = config.single_feature_path
     # Opensmile 配置文件路径：我们使用 IS10_paraling
-    opensmile_config_path = os.path.join(config.code_dir + 'opensmile-3.0-win-x64/opensmile-3.0-win-x64/', 'config/is09-13/IS10_paraling.conf')
-    cmd3 = 'SMILExtract -C ' + opensmile_config_path + ' -I ' + filepath + ' -O ' + config.code_dir + 'features/single_feature.csv'
-    cmd = subprocess.Popen(cmd3, cwd=config.code_dir + 'opensmile-3.0-win-x64/opensmile-3.0-win-x64/' + 'bin', stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+    opensmile_config_path = os.getcwd() + '/' + config.opensmile_path + 'config/is09-13/IS10_paraling.conf'
+    print(opensmile_config_path)
+    cmd3 = 'SMILExtract -C ' + opensmile_config_path + ' -I ' + filepath + ' -O ' + os.getcwd() + '/' + 'features/single_feature.csv'
+    cmd = subprocess.Popen(cmd3, cwd=config.opensmile_path + 'bin', stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                            stderr=subprocess.PIPE, shell=True).communicate()[0]
-    reader = csv.reader(open(config.code_dir + 'features/single_feature.csv', 'r'))
+    reader = csv.reader(open(os.getcwd() + '/' + 'features/single_feature.csv', 'r'))
     rows = [row for row in reader]
     last_line = rows[-1]
     return last_line[1: FEATURE_NUM[config.opensmile_config] + 1]
