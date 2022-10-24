@@ -45,7 +45,9 @@ if __name__ == '__main__':
     predict_new_path = config.data_dir + f'temp/features/'
     model = models.load_model(os.path.join(config.checkpoint_path, config.checkpoint_name + '.h5'))
     for file in os.listdir(audio_path): # 重新创建
-        if file in ['result','temp']:
+        if file in ['result', 'temp', 'LICENSE', 'README.md']:
+            continue
+        if file.startswith("."):
             continue
         if not os.path.exists(config.data_dir + f'temp/path_result/{file}'):
             os.mkdir(config.data_dir + f'temp/path_result/{file}')
