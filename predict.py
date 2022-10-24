@@ -1,9 +1,7 @@
 import numpy as np
-from utils.common import Radar, play_audio
 import opensmile as of
 import utils.opts as opts
 import soundfile as sf
-import shutil
 import csv
 def reshape_input(data):
     data = np.reshape(data, (data.shape[0], data.shape[1], 1))
