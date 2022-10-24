@@ -1,13 +1,8 @@
-import os
 import numpy as np
-
-import keras
 from keras.utils import np_utils
 import models
 import opensmile as of
 import utils.opts as opts
-from sklearn.model_selection import train_test_split
-from utils.common import load_model, Radar, play_audio
 
 '''
 train(): 训练模型
