@@ -45,7 +45,6 @@ if __name__ == '__main__':
     for file in os.listdir(audio_path): # 重新创建
         if file in ['result','temp']:
             continue
-        copyfile(os.getcwd() + '/features/single_feature.csv', config.data_dir + 'temp/features/single_feature.csv')
         if not os.path.exists(config.data_dir + f'temp/path_result/{file}'):
             os.mkdir(config.data_dir + f'temp/path_result/{file}')
         if not os.path.exists(config.data_dir + f'temp/label_result/{file}'):
@@ -57,6 +56,7 @@ if __name__ == '__main__':
         if not os.path.exists(config.data_dir + f'temp/features/{data_name}/{file}'):
             os.mkdir(config.data_dir + f'temp/features/{data_name}/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
+            copyfile(os.getcwd() + '/features/single_feature.csv', config.data_dir + 'temp/features/single_feature.csv')
             result_path = config.data_dir + f'temp/path_result/{file}/predict_{files}_path.csv'
             result_path2 = config.data_dir + f'temp/label_result/{file}/predict_{files}_result.csv'
             result_path3 = config.data_dir + f'temp/final_result/{file}/predict_{files}_result.csv'
