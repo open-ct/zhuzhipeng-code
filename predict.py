@@ -34,8 +34,6 @@ if __name__ == '__main__':
     if not os.path.exists(config.data_dir + 'result'):
         os.mkdir(config.data_dir + 'result')
     predict_path = config.data_dir + 'temp/features/'
-    if not os.path.exists(config.data_dir + 'temp/features/single_feature.csv'):
-        copyfile(os.getcwd() + '/features/single_feature.csv', config.data_dir + 'temp/features/single_feature.csv')
     if not os.path.exists(config.data_dir + 'temp/path_result'):
         os.mkdir(config.data_dir + 'temp/path_result')
         os.mkdir(config.data_dir + 'temp/label_result')
@@ -60,6 +58,7 @@ if __name__ == '__main__':
         if not os.path.exists(config.data_dir + f'temp/features/{data_name}/{file}'):
             os.mkdir(config.data_dir + f'temp/features/{data_name}/{file}')
         for files in os.listdir(os.path.join(audio_path,file)):
+            copyfile(os.getcwd() + '/features/single_feature.csv', config.data_dir + 'temp/features/single_feature.csv')
             result_path = config.data_dir + f'temp/path_result/{file}/predict_{files}_path.csv'
             result_path2 = config.data_dir + f'temp/label_result/{file}/predict_{files}_result.csv'
             result_path3 = config.data_dir + f'temp/final_result/{file}/predict_{files}_result.csv'
